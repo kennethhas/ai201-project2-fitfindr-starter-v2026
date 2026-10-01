@@ -37,6 +37,12 @@
 
 <!-- ═══════════════════════ UNIT 3 — THE BUILD ═══════════════════════ -->
 
+Milestone 1 notes:
+- Confirmed the starter runs.
+- Reviewed listing fields including title, size, and price.
+- Reviewed six full listing records.
+
+
 ## What This Does
 
 <!-- Three or four sentences: what a user asks for, and what they get back. -->
