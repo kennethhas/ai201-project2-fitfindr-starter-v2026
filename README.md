@@ -78,19 +78,9 @@ Milestone 1 notes:
 
 ## Planning Loop
 
-**Branch rule:** If `search_listings` returns an empty list, put a helpful message in the session telling the user what they could change and stop. Otherwise, take the first result, save it as the selected item, and continue to `suggest_outfit`.
+**Branch rule:** If `search_listings` returns an empty list, put a helpful message in the session and stop. Otherwise, take the first result and go to `suggest_outfit`.
 
-**Where it lives:** `agent.py::run_agent`
-
-**How the query is parsed:** Not implemented yet.
-
-**What moves through the session:** Not implemented yet.**Branch rule:**
-
-**Where it lives:** `agent.py::run_agent`
-
-**How the query is parsed:** <!-- regex, string splitting, or asking the model — say which -->
-
-**What moves through the session:** <!-- which fields, in what order -->
+**Where it lives:** `agent.py::run_agent
 
 ---
 
