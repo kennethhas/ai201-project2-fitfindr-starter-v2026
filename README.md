@@ -53,53 +53,38 @@ Milestone 1 notes:
 
 ## Tool Inventory
 
-<!-- Four lines per tool. This is worth 2 points and it's the single most
-     common place students lose them.
-
-     "Returns a list" earns NOTHING. The description has to say what is IN
-     the list.
-
-     The empty case isn't optional either — it's the thing your loop branches
-     on, and if you don't decide it here you'll discover it as a crash in
-     Milestone 5. -->
-
 ### `search_listings`
 
-- **What it does:**
-- **Inputs:** <!-- name and type each: `max_price` (float), not "a price" -->
-- **Returns:**
-- **When it has nothing:**
+- **What it does:** Searches the listings data for items that match the user's description, and optionally filters by size and maximum price.
+- **Inputs:** `description` (`str`), `size` (`str | None`), `max_price` (`float | None`)
+- **Returns:** A list of matching listing dictionaries, ordered with the best match first. Each dictionary can include fields such as `id`, `title`, `description`, `category`, `style_tags`, `size`, `condition`, `price`, `colors`, `brand`, and `platform`.
+- **When it has nothing:** Returns an empty list `[]`.
 
 ### `suggest_outfit`
 
-- **What it does:**
-- **Inputs:**
-- **Returns:**
-- **When it has nothing:**
+- **What it does:** Takes the selected listing and the user's wardrobe and generates one or two outfit suggestions.
+- **Inputs:** `new_item` (`dict`), `wardrobe` (`dict`)
+- **Returns:** A non-empty string containing outfit suggestions based on the selected item and the user's wardrobe.
+- **When it has nothing:** If the wardrobe is empty, it returns general styling advice instead of failing or returning an empty string.
 
 ### `create_fit_card`
 
-- **What it does:**
-- **Inputs:**
-- **Returns:**
-- **When it has nothing:**
+- **What it does:** Creates a short post-style caption using the selected item and the outfit suggestion.
+- **Inputs:** `outfit` (`str`), `new_item` (`dict`)
+- **Returns:** A two-to-four sentence caption that mentions the item, its price, its platform, and the overall vibe.
+- **When it has nothing:** If `outfit` is empty or only whitespace, it returns a descriptive message instead of raising an error.
 
 ---
 
 ## Planning Loop
 
-<!-- Your branch rule, stated as a rule — the condition AND both paths — plus
-     the file and function that holds it.
+**Branch rule:** If `search_listings` returns an empty list, put a helpful message in the session telling the user what they could change and stop. Otherwise, take the first result, save it as the selected item, and continue to `suggest_outfit`.
 
-     Like this:
-       "If search_listings returns an empty list, put a message in the session
-        and stop. Otherwise take the first result and go to suggest_outfit."
-        — agent.py::run_agent
+**Where it lives:** `agent.py::run_agent`
 
-     The grader checks your code against what you claim here, so the file and
-     function have to be real. -->
+**How the query is parsed:** Not implemented yet.
 
-**Branch rule:**
+**What moves through the session:** Not implemented yet.**Branch rule:**
 
 **Where it lives:** `agent.py::run_agent`
 
