@@ -25,9 +25,7 @@ Given a query that matches at least one listing, the agent completes all three
 tool calls and returns a fit card — in at least 4 of 5 tries.
 
 **Why this target:**
-<!-- Why 4 of 5 and not 5 of 5? Something about your search, probably —
-     "my search is a plain keyword match and some phrasings will miss" is a
-     real answer. -->
+I chose 4 of 5 because search_listings uses keyword matching, so some reasonable phrasings may not match even when the loop works correctly.
 
 ---
 
@@ -37,67 +35,49 @@ Given a query that matches no listings, the agent stops before calling
 `suggest_outfit` and returns a message naming what to change — 5 of 5 tries.
 
 **Why this target:**
-<!-- Why is 5 of 5 reasonable here when criterion 1 isn't? What's different
-     about this path? -->
-
----
-
-## 3. Something about state
-
-<!-- YOU WRITE THIS ONE.
-
-     How would you know that the item your search found is the same item the
-     next tool received? Name something countable or observable.
-
-     This is the criterion people find hardest, because state failure doesn't
-     look like state failure — it looks like a tool problem. Something that
-     compares session["selected_item"] against what actually reached
-     suggest_outfit is the shape you're after. -->
-
-
-
-**Why this target:**
-
+I chose 5 of 5 because an empty search result is a clear condition. If search_listings returns [], the agent should always stop before suggest_outfit.
 
 
 ---
 
-## 4. Something about the fit card
+## 3. The selected item stays the same through the session
 
-<!-- YOU WRITE THIS ONE.
-
-     The fit card calls a model, so the same input can produce different words
-     each time. That's not a bug — it's the nature of the tool. So what would
-     make it acceptable?
-
-     Think about what you'd actually be unhappy to see. A caption that never
-     mentions the price? Two different items producing the same opening
-     sentence? A card longer than a caption anyone would post? Any of those can
-     be turned into a number. -->
-
-
+For 5 of 5 matching queries, the `id` stored in
+`session["selected_item"]` matches the `id` of the listing passed to
+`suggest_outfit`.
 
 **Why this target:**
-
-
-
+I chose 5 of 5 because passing the selected item through the session is
+deterministic. If the IDs do not match, the agent used a different listing
+than the one it selected, which means the state handoff is incorrect.
 ---
 
-## 5. Your choice
+## 4. The fit card includes the important item details
 
-<!-- YOU WRITE THIS ONE TOO.
-
-     Pick something you actually care about getting right. Speed, the empty
-     wardrobe path, what happens when the model can't be reached, whether the
-     search respects a price ceiling — anything, as long as it names a number
-     or an observable outcome. -->
-
-
+For 5 of 5 successful runs, the fit card mentions the selected item,
+its price, and its platform.
 
 **Why this target:**
+I chose 5 of 5 because the item, price, and platform are facts provided
+directly to `create_fit_card`. Different wording is acceptable, but leaving
+out one of these facts means the final response did not use all of the
+important information it was given.
+---
 
+## 5. Search respects the maximum price
 
+For 5 different queries that include a maximum price, every listing returned
+by `search_listings` has a price less than or equal to the requested maximum.
+At least one of the five queries must use a price ceiling that excludes an
+otherwise matching listing.
 
+**Why this target:**
+I chose 5 of 5 because price filtering is deterministic. Returning even one
+listing above the user's stated budget means the filter is incorrect. Requiring
+at least one query to exclude an otherwise matching item also proves that the
+price filter was actually exercised.
+
+That last sentence is important.
 ---
 
 <!-- ─────────────────────────────────────────────────────────────────────────
