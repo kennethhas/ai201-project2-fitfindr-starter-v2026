@@ -54,7 +54,7 @@ than the one it selected, which means the state handoff is incorrect.
 
 ## 4. The fit card includes the important item details
 
-For 5 of 5 successful runs, the fit card mentions the selected item,
+For 5 of 5 successful runs, the fit card mentions the selected item's title,
 its price, and its platform.
 
 **Why this target:**
@@ -77,7 +77,6 @@ listing above the user's stated budget means the filter is incorrect. Requiring
 at least one query to exclude an otherwise matching item also proves that the
 price filter was actually exercised.
 
-That last sentence is important.
 ---
 
 <!-- ─────────────────────────────────────────────────────────────────────────

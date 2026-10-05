@@ -45,9 +45,11 @@ Milestone 1 notes:
 
 ## What This Does
 
-<!-- Three or four sentences: what a user asks for, and what they get back. -->
-
-
+FitFindr is a three-tool agent that helps a user find a secondhand clothing item
+based on a description, size, and maximum price. It searches the available
+listings, selects the best matching item, and uses the user's wardrobe to
+suggest an outfit. It then creates a short fit card that includes the selected
+item, price, platform, and overall styling idea.
 
 ---
 
@@ -78,43 +80,78 @@ Milestone 1 notes:
 
 ## Planning Loop
 
-**Branch rule:** If `search_listings` returns an empty list, put a helpful message in the session and stop. Otherwise, take the first result and go to `suggest_outfit`.
+**Branch rule:** If `search_listings` returns an empty list, put a helpful
+message in the session and stop. Otherwise, take the first result, save it as
+the selected item, and continue to `suggest_outfit`.
 
-**Where it lives:** `agent.py::run_agent
+**Where it lives:** `agent.py::run_agent`
+
+**How the query is parsed:** Regular expressions extract the size and maximum
+price from the user's query. The remaining text is used as the item description.
+
+**What moves through the session:** The parsed query is stored first, followed
+by the search results. The first result is saved as `selected_item`.
+`suggest_outfit` reads that selected item from the session and its result is
+stored as `outfit_suggestion`. `create_fit_card` then reads the outfit
+suggestion and selected item, and the final result is stored as `fit_card`.
 
 ---
 
 ## Sample Run
 
-<!-- Two things go here.
-
-     1. One FULL query and its output, pasted as text.
-     2. Your three per-tool terminal tests — the command and what it printed. -->
-
 **One full query**
 
-```
-$ python app.py ask '...'
+```text
+$ python agent.py
+
+=== A query the data can match ===
+parsed: {'description': 'looking for a vintage graphic tee', 'size': None, 'max_price': 30.0}
+found: Y2K Baby Tee — Butterfly Print — $18.0 on depop
+state: selected lst_002 → suggest_outfit received lst_002
+outfit: Pair the Y2K Baby Tee — Butterfly Print with the baggy straight-leg
+jeans, dark wash to lean into authentic 2000s proportions. Layer the slightly
+cropped vintage black denim jacket over top for structure, and finish the look
+with chunky white sneakers and the black crossbody bag for an effortless
+everyday streetwear vibe.
+
+Alternatively, for a softer look that blends the tee's butterfly print and
+pastel colors with your earth tones, tuck the baby tee into the wide-leg khaki
+trousers. Accentuate the waist with the brown leather belt, and wear the chunky
+white sneakers to keep the outfit casual, balanced, and comfortable.
+
+fit card: Channel major 2000s energy with this super cute Y2K Baby Tee
+featuring a dreamy butterfly print in pink and purple. It's giving the ultimate
+effortless streetwear vibe, and it's up for grabs on depop for just $18.00!
 
 ```
 
 **The three tools, tested one at a time**
 
-```
-$ python -c "from tools import search_listings; print(search_listings('graphic tee', max_price=30))"
+```text
+$ python -c "from tools import search_listings; r=search_listings('graphic tee', max_price=30); print([(x['id'], x['title'], x['price']) for x in r])"
+
+[('lst_002', 'Y2K Baby Tee — Butterfly Print', 18.0),
+ ('lst_006', 'Graphic Tee — 2003 Tour Bootleg Style', 24.0),
+ ('lst_017', 'Mesh Long-Sleeve Top — Black', 15.0),
+ ('lst_033', 'Vintage Band Tee — Faded Grey', 19.0),
+ ('lst_011', 'Low-Rise Cargo Pants — Khaki', 27.0),
+ ('lst_015', 'Vintage Graphic Hoodie — Faded Black', 26.0)]
 
 ```
 
-```
-$ python -c "from tools import suggest_outfit; ..."
+```text
+$ python -c "from tools import suggest_outfit; from utils.data_loader import get_example_wardrobe, load_listings; print(suggest_outfit(load_listings()[0], get_example_wardrobe()))"
 
-```
+Outfit One: Pair the vintage Levi's 501 jeans with the white ribbed tank top, layered under the vintage black denim jacket. Complete the look with the chunky white sneakers and the black crossbody bag for a classic, effortless streetwear vibe.
 
-```
-$ python -c "from tools import create_fit_card; ..."
-
+Outfit Two: Style the vintage Levi's 501 jeans with the oversized grey crewneck sweatshirt for a relaxed, cozy silhouette. Add the brown leather belt to define the waist and finish the outfit with the black combat boots and black crossbody bag for an easy, everyday look.
 ```
 
+```text
+$ python -c "from tools import create_fit_card; from utils.data_loader import load_listings; print(create_fit_card('jeans and white sneakers', load_listings()[0]))"
+
+Scored these vintage Levi's 501 jeans in a timeless medium wash and they are the ultimate closet staple. Just style them with crisp white sneakers for an effortless streetwear look that never misses. Grab this classic denim piece now on depop for just $38.00 before someone else does!
+```
 ---
 
 ## How I Used AI
@@ -128,16 +165,31 @@ $ python -c "from tools import create_fit_card; ..."
 
 **Moment 1**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* I asked AI to help me review my `search_listings` logic.
+- *What came back:* It pointed out that my keyword check used substring
+  matching (`word in searchable_text`), so "hat" matched "that" in the Polo
+  listing and "red" matched "structured" in the Denim Jacket. It also noted I
+  kept filler words like "a" and "for", which appear in almost every listing.
+- *What I changed:* I kept my structure but switched to whole-word matching
+  with a stopword list, and changed `if size is not None:` to `if size:` so an
+  empty size string doesn't filter out every listing. My size matching was
+  already whole-token, so `L` doesn't match `XL`; I kept that as-is.
 
 **Moment 2**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
-
+- *What I asked for:*I asked AI to help me review my `agent.py` 
+- *What came back:* It said my structure was excellent  — I used a `while True`
+  loop with a `step` variable, while its version ran the steps in a straight
+  line. But it found a bug in my size regex: the letters-only pattern was
+  checked first, so "size US 8.5" was cut down to just "US", which would match
+  every US shoe size. It also pointed out that I never recorded what
+  `suggest_outfit` actually received, so I had no way to check my state
+  criterion (criterion 3).
+- *What I changed:* I kept my loop structure. I moved the `US` pattern first
+  and defined the size regex once as `SIZE_PATTERN` so the find and remove
+  steps can't drift apart. I added `session["outfit_input"]` and a `state:`
+  line in `_show` that prints both IDs. I also made the empty-search message
+  use the user's actual price and size.
 <!-- ═══════════════════════ UNIT 4 — THE TEST ═══════════════════════
 
      Don't fill these in during unit 3.
