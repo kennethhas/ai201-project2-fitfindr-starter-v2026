@@ -13,12 +13,30 @@ Build and test your three tools in `tools.py` first. Then come here.
     python agent.py          runs both example paths below
 """
 
+import re
+ 
 import config
 import trace
 from tools import search_listings, suggest_outfit, create_fit_card
 from generate import ModelUnavailable
+ 
 
-
+# ── query patterns ────────────────────────────────────────────────────────────
+ 
+# Defined once and used for both finding and removing the size, so the two
+# can never drift apart.
+# US comes first, so "size US 8.5" is captured whole instead of being cut to "US".
+SIZE_PATTERN = (
+    r"\bsize\s+("
+    r"US\s*\d+(?:\.\d+)?"
+    r"|W\d+(?:\s+L\d+)?"
+    r"|[A-Za-z]{1,3}(?:/[A-Za-z]{1,3})?"
+    r"|\d+(?:\.\d+)?"
+    r")\b"
+)
+ 
+PRICE_PATTERN = r"\b(?:under|below)\s*\$?(\d+(?:\.\d+)?)"
+ 
 # ── session state ─────────────────────────────────────────────────────────────
 
 def new_session(query: str, wardrobe: dict) -> dict:
@@ -40,6 +58,7 @@ def new_session(query: str, wardrobe: dict) -> dict:
         "parsed": {},                # description / size / max_price you pulled out of it
         "search_results": [],        # everything search_listings returned
         "selected_item": None,       # the one you chose — goes into suggest_outfit
+        "outfit_input": None,        # the item suggest_outfit actually received (criterion 3)
         "wardrobe": wardrobe,        # the user's wardrobe
         "outfit_suggestion": None,   # what suggest_outfit returned
         "fit_card": None,            # what create_fit_card returned
@@ -106,14 +125,165 @@ def run_agent(query: str, wardrobe: dict) -> dict:
         than a stack trace. The import is already at the top of this file.
     """
     session = new_session(query, wardrobe)
+    
+    # ── Parse maximum price ────────────────────────────────────────────────
+    # Example:
+    # "graphic tee under $30" -> 30.0
+    price_match = re.search(PRICE_PATTERN, query, re.IGNORECASE)
+ 
+    if price_match:
+        max_price = float(price_match.group(1))
+    else:
+        max_price = None
+ 
+    # ── Parse size ─────────────────────────────────────────────────────────
+    # Handles examples such as:
+    # size M
+    # size XXS
+    # size S/M
+    # size W30 L30
+    # size US 8.5
+    size_match = re.search(SIZE_PATTERN, query, re.IGNORECASE)
+ 
+    if size_match:
+        size = size_match.group(1)
+    else:
+        size = None
+ 
+ 
+    # ── Build the description ──────────────────────────────────────────────
+    # Remove the price phrase from the search description.
+    description = re.sub(PRICE_PATTERN, "", query, flags=re.IGNORECASE)
+ 
+    # Remove the size phrase from the search description.
+    description = re.sub(SIZE_PATTERN, "", description, flags=re.IGNORECASE)
+ 
+    # Clean extra spaces and punctuation.
+    description = " ".join(description.split()).strip(" ,.-")
+ 
+ 
+    # Save parsed information in the session.
+    session["parsed"] = {
+        "description": description,
+        "size": size,
+        "max_price": max_price,
+    }
+ 
+ 
+    # ── Planning loop ──────────────────────────────────────────────────────
+ 
+    step = "search"
+    count = 0
+ 
+    while True:
+ 
+        count += 1
+ 
+        # Safety guard so the agent cannot loop forever.
+        trace.check_iterations(count)
+ 
+ 
+        # ── STEP 1: SEARCH ────────────────────────────────────────────────
+        if step == "search":
+ 
+            session["search_results"] = search_listings(
+                description=session["parsed"]["description"],
+                size=session["parsed"]["size"],
+                max_price=session["parsed"]["max_price"],
+            )
+ 
+ 
+            # IMPORTANT BRANCH:
+            # If search returned nothing, stop here.
+            if not session["search_results"]:
+ 
+                # Name what the user could change, using what they asked for.
+                tips = []
+                p = session["parsed"]
+                if p["max_price"] is not None:
+                    tips.append(f"raise your ${p['max_price']:.0f} price limit")
+                if p["size"]:
+                    tips.append(f"try a size other than {p['size']}")
+                tips.append("use broader words like 'tee' or 'jacket'")
+ 
+                session["error"] = (
+                    "I couldn't find a matching item. Try: "
+                    + "; ".join(tips) + "."
+                )
+ 
+                return session
+ 
+ 
+            # Pick the first / best search result.
+            session["selected_item"] = session["search_results"][0]
+ 
+            # Next action depends on the successful search.
+            step = "outfit"
+            continue
+ 
+ 
+        # ── STEP 2: SUGGEST OUTFIT ───────────────────────────────────────
+        if step == "outfit":
+ 
+            # Read the item back out of the session, and record exactly
+            # what suggest_outfit received.
+            item = session["selected_item"]
+            session["outfit_input"] = item
+ 
+            session["outfit_suggestion"] = suggest_outfit(
+                item,
+                session["wardrobe"],
+            )
+ 
+            step = "fit_card"
+            continue
+ 
+ 
+        # ── STEP 3: CREATE FIT CARD ──────────────────────────────────────
+        if step == "fit_card":
+ 
+            session["fit_card"] = create_fit_card(
+                session["outfit_suggestion"],
+                session["selected_item"],
+            )
+ 
+            return session
+ 
+ 
+# ── display helper ────────────────────────────────────────────────────────────
+ 
+def _show(session: dict) -> None:
+ 
+    print(f"  parsed:   {session['parsed']}")
+ 
+    if session["error"]:
+        print(f"  stopped: {session['error']}")
+        print(
+            f"  fit_card is {session['fit_card']!r} "
+            f"— it should still be None here"
+        )
+        return
+ 
+    item = session["selected_item"] or {}
+    received = session.get("outfit_input") or {}
+ 
+    print(
+        f"  found:    {item.get('title')} — "
+        f"${item.get('price')} on {item.get('platform')}"
+    )
+    print(
+        f"  state:    selected {item.get('id')} → "
+        f"suggest_outfit received {received.get('id')}"
+    )
+ 
+    print(f"  outfit:   {session['outfit_suggestion']}")
+    print(f"  fit card: {session['fit_card']}")
+ 
 
-    # TODO: delete these two lines and build the loop.
-    session["error"] = "The planning loop isn't built yet — see the TODO in agent.py."
-    return session
 
 
 # ── running it directly ───────────────────────────────────────────────────────
-
+"""
 def _show(session: dict) -> None:
     if session["error"]:
         print(f"  stopped: {session['error']}")
@@ -124,7 +294,7 @@ def _show(session: dict) -> None:
     print(f"  found:    {item.get('title')} — ${item.get('price')} on {item.get('platform')}")
     print(f"  outfit:   {session['outfit_suggestion']}")
     print(f"  fit card: {session['fit_card']}")
-
+"""
 
 if __name__ == "__main__":
     from utils.data_loader import get_example_wardrobe
