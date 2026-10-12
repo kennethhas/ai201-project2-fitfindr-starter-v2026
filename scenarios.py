@@ -35,6 +35,48 @@ SCENARIOS = [
         "wardrobe": "empty",
         "criterion": None,
     },
+      {
+        "name": "selected item stays consistent",
+        "query": "vintage graphic tee under $30",
+        "wardrobe": "example",
+        "criterion": 3,
+    },
+    {
+        "name": "fit card includes item details",
+        "query": "vintage graphic tee under $30",
+        "wardrobe": "example",
+        "criterion": 4,
+    },
+        {
+        "name": "price filter jeans",
+        "query": "vintage jeans under $30",
+        "wardrobe": "example",
+        "criterion": 5,
+    },
+    {
+        "name": "price filter graphic tee",
+        "query": "graphic tee under $20",
+        "wardrobe": "example",
+        "criterion": 5,
+    },
+    {
+        "name": "price filter denim jacket",
+        "query": "denim jacket under $40",
+        "wardrobe": "example",
+        "criterion": 5,
+    },
+    {
+        "name": "price filter leather bomber",
+        "query": "leather bomber under $60",
+        "wardrobe": "example",
+        "criterion": 5,
+    },
+    {
+        "name": "price filter suede boots",
+        "query": "suede boots under $50",
+        "wardrobe": "example",
+        "criterion": 5,
+    },
     # TODO: add what your criteria 3, 4 and 5 need.
     #
     # Set "criterion" to the number in criteria.md that the scenario tests.
