@@ -104,13 +104,13 @@ def search_listings(
         # and "red" no longer matches "structured".
         searchable_words = set(re.findall(r"[a-z0-9]+", searchable_text))
  
-        # Count how many query words match
+       # Count how many query words match
         score = sum(1 for word in query_words if word in searchable_words)
- 
-        # Ignore anything with no keyword match
-        if score == 0:
-            continue
- 
+
+        # Require every meaningful query word to match
+        if score < len(query_words):
+         continue
+
         matches.append((score, listing))
  
     # Highest score first

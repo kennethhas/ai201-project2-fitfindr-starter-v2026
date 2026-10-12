@@ -438,17 +438,71 @@ After making the change, I tested the agent using a vintage graphic tee search. 
 
 **What I changed:**
 
+I improved the search_listings function in tools.py. Before the change, an item only needed to match one keyword from the user's description to appear in the results.
+
+I changed the matching condition from if score == 0 to if score < len(query_words). Now a listing must match every meaningful keyword in the search description.
+
+I kept the existing size and maximum-price filters unchanged.
+
+Which failure it was meant to fix:
+
+During my baseline evaluation, searching for "leather bomber under $60" returned Platform Mary Janes shoes, a leather belt, and a shoulder bag. The search tool accepted partially matching items that were not the requested clothing type.
+
+My goal was to reduce irrelevant search results without breaking the agent's existing workflow.
+
 **Which failure it was meant to fix:**
 
 ### Run Log — After
 
-| Criterion | Target | Try 1 | Try 2 | Try 3 | Try 4 | Try 5 | Verdict |
-| --------- | ------ | ----- | ----- | ----- | ----- | ----- | ------- |
-| 1.        |        |       |       |       |       |       |         |
-| 2.        |        |       |       |       |       |       |         |
-| 3.        |        |       |       |       |       |       |         |
-| 4.        |        |       |       |       |       |       |         |
-| 5.        |        |       |       |       |       |       |         |
+ran python run_eval.py --label after using the same scenarios as the before evaluation, with five tries per scenario and caching disabled.
+
+Evidence file: results/run_2026-10-12_0024_after.md
+
+Produced by: run_eval.py::main, agent.py::run_agent, and tools.py::search_listings through MCP.
+
+| Criterion                                            | Target              | Try 1 | Try 2 | Try 3 | Try 4 | Try 5 | Verdict   |
+| ---------------------------------------------------- | ------------------- | ----- | ----- | ----- | ----- | ----- | --------- |
+| 1. Matching query completes all three tools          | 4 of 5              | PASS  | PASS  | PASS  | PASS  | PASS  | MET (5/5) |
+| 2. Empty query stops before suggest_outfit           | 5 of 5              | PASS  | PASS  | PASS  | PASS  | PASS  | MET (5/5) |
+| 3. Selected item ID remains consistent               | 5 of 5              | PASS  | PASS  | PASS  | PASS  | PASS  | MET (5/5) |
+| 4. Fit card mentions item title, price, and platform | 5 of 5              | PASS  | PASS  | PASS  | PASS  | PASS  | MET (5/5) |
+| 5. Search respects maximum price                     | 5 different queries | PASS  | PASS  | PASS  | PASS  | PASS  | MET (5/5) |
+
+Criterion 3 was evaluated using the same dictionary handoff as before. The trace displays item names rather than IDs.
+
+For Criterion 5, all five different queries remained within budget. The denim jacket query returned no results under $40, while the empty-wardrobe diagnostic found the matching $42 denim jacket under $50.
+
+**_Before and After Comparison_**
+
+| Test query                    | Before              | After     |
+| ----------------------------- | ------------------- | --------- |
+| Leather bomber under $60      | 3 unrelated results | 0 results |
+| Vintage graphic tee under $30 | 10 results          | 3 results |
+| Denim jacket under $40        | 5 results           | 0 results |
+| Vintage jeans under $30       | 10 results          | 1 result  |
+| Suede boots under $50         | 1 result            | 1 result  |
+
+**_Real Output — After_**
+
+From agent.py::run_agent, recorded by run_eval.py::main:
+
+Query: leather bomber under $60
+
+[1] parse_query
+in: leather bomber under $60
+out: {'description': 'leather bomber', 'size': None, 'max_price': 60.0}
+
+[2] search_listings (via MCP)
+in: {'description': 'leather bomber', 'size': None, 'max_price': 60.0}
+out: [] (empty)
+→ 0 match(es)
+
+[3] branch
+→ Search returned no results. Stopping before suggest_outfit.
+
+Actual response:
+
+I couldn't find a matching item. Try: raise your $60 price limit; use broader words like 'tee' or 'jacket'.
 
 **Did it help, and how do I know:**
 
