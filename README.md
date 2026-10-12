@@ -38,10 +38,10 @@
 <!-- ═══════════════════════ UNIT 3 — THE BUILD ═══════════════════════ -->
 
 Milestone 1 notes:
+
 - Confirmed the starter runs.
 - Reviewed listing fields including title, size, and price.
 - Reviewed six full listing records.
-
 
 ## What This Does
 
@@ -152,6 +152,7 @@ $ python -c "from tools import create_fit_card; from utils.data_loader import lo
 
 Scored these vintage Levi's 501 jeans in a timeless medium wash and they are the ultimate closet staple. Just style them with crisp white sneakers for an effortless streetwear look that never misses. Grab this classic denim piece now on depop for just $38.00 before someone else does!
 ```
+
 ---
 
 ## How I Used AI
@@ -165,31 +166,31 @@ Scored these vintage Levi's 501 jeans in a timeless medium wash and they are the
 
 **Moment 1**
 
-- *What I asked for:* I asked AI to help me review my `search_listings` logic.
-- *What came back:* It pointed out that my keyword check used substring
+- _What I asked for:_ I asked AI to help me review my `search_listings` logic.
+- _What came back:_ It pointed out that my keyword check used substring
   matching (`word in searchable_text`), so "hat" matched "that" in the Polo
   listing and "red" matched "structured" in the Denim Jacket. It also noted I
   kept filler words like "a" and "for", which appear in almost every listing.
-- *What I changed:* I kept my structure but switched to whole-word matching
+- _What I changed:_ I kept my structure but switched to whole-word matching
   with a stopword list, and changed `if size is not None:` to `if size:` so an
   empty size string doesn't filter out every listing. My size matching was
   already whole-token, so `L` doesn't match `XL`; I kept that as-is.
 
 **Moment 2**
 
-- *What I asked for:*I asked AI to help me review my `agent.py` 
-- *What came back:* It said my structure was excellent  — I used a `while True`
+- *What I asked for:*I asked AI to help me review my `agent.py`
+- _What came back:_ It said my structure was excellent — I used a `while True`
   loop with a `step` variable, while its version ran the steps in a straight
   line. But it found a bug in my size regex: the letters-only pattern was
   checked first, so "size US 8.5" was cut down to just "US", which would match
   every US shoe size. It also pointed out that I never recorded what
   `suggest_outfit` actually received, so I had no way to check my state
   criterion (criterion 3).
-- *What I changed:* I kept my loop structure. I moved the `US` pattern first
-  and defined the size regex once as `SIZE_PATTERN` so the find and remove
-  steps can't drift apart. I added `session["outfit_input"]` and a `state:`
-  line in `_show` that prints both IDs. I also made the empty-search message
-  use the user's actual price and size.
+- _What I changed:_ I kept my loop structure. I moved the `US` pattern first
+and defined the size regex once as `SIZE_PATTERN` so the find and remove
+steps can't drift apart. I added `session["outfit_input"]` and a `state:`
+line in `_show` that prints both IDs. I also made the empty-search message
+use the user's actual price and size.
 <!-- ═══════════════════════ UNIT 4 — THE TEST ═══════════════════════
 
      Don't fill these in during unit 3.
@@ -209,12 +210,12 @@ Scored these vintage Levi's 501 jeans in a timeless medium wash and they are the
      into results/. Paste it here and fill in the verdicts. -->
 
 | Criterion | Target | Try 1 | Try 2 | Try 3 | Try 4 | Try 5 | Verdict |
-|---|---|---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |  |  |
+| --------- | ------ | ----- | ----- | ----- | ----- | ----- | ------- |
+| 1.        |        |       |       |       |       |       |         |
+| 2.        |        |       |       |       |       |       |         |
+| 3.        |        |       |       |       |       |       |         |
+| 4.        |        |       |       |       |       |       |         |
+| 5.        |        |       |       |       |       |       |         |
 
 **Real output from one try**, pasted as text, naming the file and function
 that produced it:
@@ -243,17 +244,15 @@ that produced it:
      Look for a pattern. Three misses on the same tool is one problem, not
      three. -->
 
-| # | Criterion | Target | Verdict | How I decided |
-|---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
-| 5 |  |  |  |  |
+| #   | Criterion | Target | Verdict | How I decided |
+| --- | --------- | ------ | ------- | ------------- |
+| 1   |           |        |         |               |
+| 2   |           |        |         |               |
+| 3   |           |        |         |               |
+| 4   |           |        |         |               |
+| 5   |           |        |         |               |
 
 **Diagnoses**
-
-
 
 ---
 
@@ -270,23 +269,56 @@ that produced it:
      anyone will ever find that out. -->
 
 **Happy path**
+python app.py ask 'vintage graphic tee under $30' --trace
+[1] parse_query
+in: vintage graphic tee under $30
+out: {'description': 'vintage graphic tee', 'size': None, 'max_price': 30.0}
+[2] search_listings (via MCP)
+in: {'description': 'vintage graphic tee', 'size': None, 'max_price': 30.0}
+out: 10 items: Y2K Baby Tee — Butterfly Print, Graphic Tee — 2003 Tour Bootleg Style, Vintage Band Tee — Faded Grey … +7 more
+→ 10 match(es)
+[3] select_item
+out: Y2K Baby Tee — Butterfly Print ($18.0, depop)
+[4] suggest_outfit
+in: Y2K Baby Tee — Butterfly Print ($18.0, depop)
+out: Pair the Y2K Baby Tee — Butterfly Print with the baggy straight-leg jeans, dark wash to lean into authentic 20…
+[5] create_fit_card
+in: Y2K Baby Tee — Butterfly Print ($18.0, depop)
+out: Channel major 2000s energy with this super cute Y2K Baby Tee featuring a dreamy butterfly print in pink and pu…
 
-```
+Found: Y2K Baby Tee — Butterfly Print — $18.0 on depop
 
-```
+Outfit: Pair the Y2K Baby Tee — Butterfly Print with the baggy straight-leg jeans, dark wash to lean into authentic 2000s proportions. Layer the slightly cropped vintage black denim jacket over top for structure, and finish the look with chunky white sneakers and the black crossbody bag for an effortless everyday streetwear vibe.
+
+Alternatively, for a softer look that blends the tee's butterfly print and pastel colors with your earth tones, tuck the baby tee into the wide-leg khaki trousers. Accentuate the waist with the brown leather belt, and wear the chunky white sneakers to keep the outfit casual, balanced, and comfortable.
+
+Fit card: Channel major 2000s energy with this super cute Y2K Baby Tee featuring a dreamy butterfly print in pink and purple. It's giving the ultimate effortless streetwear vibe, and it's up for grabs on depop for just $18.00!
 
 **Empty search**
 
-```
+python app.py ask 'designer ballgown size XXS under $5' --trace
+[1] parse_query
+in: designer ballgown size XXS under $5
+out: {'description': 'designer ballgown', 'size': 'XXS', 'max_price': 5.0}
+[2] search_listings (via MCP)
+in: {'description': 'designer ballgown', 'size': 'XXS', 'max_price': 5.0}
+out: [] (empty)
+→ 0 match(es)
+[3] branch
+→ Search returned no results. Stopping before suggest_outfit.
 
-```
+I couldn't find a matching item. Try: raise your $5 price limit; try a size other than XXS; use broader words like 'tee' or 'jacket'.
+
+0 model calls this session
 
 **On the MCP move:** <!-- what changed in your code, and whether anything
 behaved differently afterwards. If the rewire didn't work, say exactly where it
 broke — the error text and the last thing that worked. That earns the point in
 full. -->
 
+I moved the search_listings tool from a direct Python function call to an MCP call using mcp_client.call_tool(). I registered the tool in mcp_server.py with a description and typed parameters.
 
+After making the change, I tested the agent using a vintage graphic tee search. The search returned 10 matching items, and the agent successfully generated an outfit suggestion and fit card. The agent continued working as expected after the MCP change.
 
 ---
 
@@ -304,19 +336,17 @@ full. -->
 ### Run Log — After
 
 | Criterion | Target | Try 1 | Try 2 | Try 3 | Try 4 | Try 5 | Verdict |
-|---|---|---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |  |  |
+| --------- | ------ | ----- | ----- | ----- | ----- | ----- | ------- |
+| 1.        |        |       |       |       |       |       |         |
+| 2.        |        |       |       |       |       |       |         |
+| 3.        |        |       |       |       |       |       |         |
+| 4.        |        |       |       |       |       |       |         |
+| 5.        |        |       |       |       |       |       |         |
 
 **Did it help, and how do I know:**
 
 <!-- If it made things worse, say that. Honestly reported, that earns full
      credit and is more interesting than one that worked. -->
-
-
 
 ---
 
@@ -325,8 +355,6 @@ full. -->
 <!-- For each criterion still missed: what you'd do, and why you stopped where
      you did. "I ran out of time" is fine if it's true. Pretending nothing is
      left is not. -->
-
-
 
 <!-- ═════════════════════════════════════════════════════════════════════
 
