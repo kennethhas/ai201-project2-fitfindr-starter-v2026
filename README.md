@@ -332,13 +332,13 @@ Under $50: $42 denim jacket included
 
 **_Verdicts and Diagnoses_**
 
-| #   | Criterion                                         | Target              | Verdict   | How I decided                                                                                                                                           |
-| --- | ------------------------------------------------- | ------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Matching query completes all three tools          | 4/5                 | MET (5/5) | All five runs completed search_listings, suggest_outfit, and create_fit_card.                                                                           |
-| 2   | Empty query stops before suggest_outfit           | 5/5                 | MET (5/5) | All five runs returned zero results and stopped before suggest_outfit, with a helpful message.                                                          |
-| 3   | Selected item ID remains consistent               | 5/5                 | MET (5/5) | The traces showed the same item selected and passed to suggest_outfit. The code uses the same item dictionary, preserving its ID.                       |
-| 4   | Fit card mentions item title, price, and platform | 5/5                 | MET (5/5) | All five fit cards identified the Y2K butterfly-print baby tee, included $18.00, and mentioned depop. I counted recognizable product names as mentions. |
-| 5   | Search respects maximum price                     | 5 different queries | MET (5/5) | All five searches returned items within the price limit. A $42 jacket was excluded at $40 and included at $50.                                          |
+| #   | Criterion                                         | Target              | Verdict   | How I decided                                                                                                                                                                                                                             |
+| --- | ------------------------------------------------- | ------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Matching query completes all three tools          | 4/5                 | MET (5/5) | All five runs completed search_listings, suggest_outfit, and create_fit_card.                                                                                                                                                             |
+| 2   | Empty query stops before suggest_outfit           | 5/5                 | MET (5/5) | All five runs returned zero results and stopped before suggest_outfit, with a helpful message.                                                                                                                                            |
+| 3   | Selected item ID remains consistent               | 5/5                 | MET (5/5) | All five traces showed the same item being selected and passed to suggest_outfit. The code passes the same dictionary, so the ID is preserved. The logs show item names rather than IDs.uses the same item dictionary, preserving its ID. |
+| 4   | Fit card mentions item title, price, and platform | 5/5                 | MET (5/5) | All five fit cards identified the Y2K butterfly-print baby tee, included $18.00, and mentioned depop. I counted recognizable product names as mentions.                                                                                   |
+| 5   | Search respects maximum price                     | 5 different queries | MET (5/5) | All five searches returned items within the price limit. A $42 jacket was excluded at $40 and included at $50.                                                                                                                            |
 
 ### Diagnoses
 
