@@ -247,7 +247,7 @@ out: [] (empty)
 → Search returned no results. Stopping before suggest_outfit.
 ```
 
-```
+````
 ### Criterion 3 — Selected item stays consistent
 
 Produced by: `run_eval.py::main` and `agent.py::run_agent`
@@ -259,7 +259,7 @@ Actual trace:
     out: Y2K Baby Tee — Butterfly Print ($18.0, depop)
 [4] suggest_outfit
     in: Y2K Baby Tee — Butterfly Print ($18.0, depop)
-```
+````
 
 Relevant code from `agent.py::run_agent`:
 
@@ -274,9 +274,11 @@ session["outfit_suggestion"] = suggest_outfit(
 ```
 
 The same item dictionary is used for both values, so the item ID is preserved. The trace displays the item title rather than its ID.
+
 ```
 
 ```
+
     Criterion 4 — Fit card
 
 Selected item:
@@ -288,9 +290,11 @@ Print baby tee for giving off the ultimate effortless,
 everyday throwback vibe! It’s up on my depop right now
 for $18.00 and works with everything from baggy jeans
 to khaki trousers. Grab it before it's gone!
+
 ```
 
 ```
+
 Criterion 5 — Price filtering verification
 vintage jeans: PASS | 10 results | budget $30
 graphic tee: PASS | 3 results | budget $20
@@ -301,6 +305,7 @@ suede boots: PASS | 1 results | budget $50
 Boundary verification:
 Under $40: $42 denim jacket excluded
 Under $50: $42 denim jacket included
+
 ```
 
 ---
@@ -322,17 +327,33 @@ Under $50: $42 denim jacket included
 
      Look for a pattern. Three misses on the same tool is one problem, not
      three. -->
+## Verdicts and Diagnoses
 
-| #   | Criterion | Target | Verdict | How I decided |
-| --- | --------- | ------ | ------- | ------------- |
-| 1   |           |        |         |               |
-| 2   |           |        |         |               |
-| 3   |           |        |         |               |
-| 4   |           |        |         |               |
-| 5   |           |        |         |               |
+| # | Criterion | Target | Verdict | How I decided |
+|---|---|---|---|---|
+| 1 | Matching query completes all three tools | 4/5 | MET (5/5) | All five runs completed search_listings, suggest_outfit, and create_fit_card. |
+| 2 | Empty query stops before suggest_outfit | 5/5 | MET (5/5) | All five runs returned zero results and stopped before suggest_outfit, with a helpful message. |
+| 3 | Selected item ID remains consistent | 5/5 | MET (5/5) | The traces showed the same item selected and passed to suggest_outfit. The code uses the same item dictionary, preserving its ID. |
+| 4 | Fit card mentions item title, price, and platform | 5/5 | MET (5/5) | All five fit cards identified the Y2K butterfly-print baby tee, included $18.00, and mentioned depop. I counted recognizable product names as mentions. |
+| 5 | Search respects maximum price | 5 different queries | MET (5/5) | All five searches returned items within the price limit. A $42 jacket was excluded at $40 and included at $50. |
 
-**Diagnoses**
+### Diagnoses
 
+All five criteria met their original targets. However, testing showed a problem that my criteria did not measure.
+
+**Problem:** When I searched for "leather bomber under $60", FitFindr selected Platform Mary Janes shoes costing $55 instead of returning a leather bomber jacket.
+
+**Where it happened:** The search_listings tool.
+
+**Why it happened:** The keyword search matches individual words and can return unrelated clothing that shares part of the description. It does not consistently require the requested product type to match.
+
+**Pattern:** My agent follows the three-tool workflow, keeps the selected item consistent, and respects price limits, but sometimes returns the wrong type of clothing.
+
+**Were my targets too easy?** My original criteria checked whether the agent completed its steps and returned items within budget, but they did not test whether the selected item was actually relevant to the user's request.
+
+**What I would tighten:** In a future evaluation, I would add a criterion requiring the selected item to match the requested clothing type in at least 4 of 5 different searches.
+
+I kept my five original criteria unchanged because they are measurable and were written before testing.
 ---
 
 ## Loop Trace
@@ -472,3 +493,4 @@ After making the change, I tested the agent using a vintage graphic tee search. 
 ---
 
 📖 **How to run this project: [RUNNING.md](RUNNING.md)**
+```
