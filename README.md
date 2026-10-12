@@ -513,6 +513,30 @@ I couldn't find a matching item. Try: raise your $60 price limit; use broader wo
 
 ## What's Still Broken
 
+All five of my original acceptance criteria were MET after testing, so there are no missed criteria that still need fixing.
+
+However, FitFindr still has some limitations.
+
+**1. Search is too strict.**
+
+I changed `search_listings` to require every meaningful keyword to match. This fixed the leather bomber problem, but it could reject good items that use different words or descriptions.
+
+**2. Search does not fully understand clothing categories.**
+
+FitFindr uses keyword matching rather than understanding what type of clothing the user actually wants. It may still struggle with synonyms or descriptions that mean the same thing.
+
+**3. My testing could be more detailed.**
+
+My five criteria passed, but they did not directly measure search relevance. Also, my evaluation traces showed selected item names instead of explicitly recording their IDs.
+
+**Why I stopped here:**
+
+I focused on fixing one specific problem for Milestone 5. After the improvement, the leather bomber search returned no unrelated items, and the original five criteria still passed. I stopped because the required improvement and before-and-after evaluation were complete.
+
+**What I would improve next:**
+
+I would add better clothing-category matching, test more search queries, and record item IDs directly in the trace to make future evaluations more accurate.
+
 <!-- For each criterion still missed: what you'd do, and why you stopped where
      you did. "I ran out of time" is fine if it's true. Pretending nothing is
      left is not. -->
