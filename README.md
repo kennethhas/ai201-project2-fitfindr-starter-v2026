@@ -352,9 +352,11 @@ All five criteria met their original targets. However, testing showed a problem 
 
 **Pattern:** My agent follows the three-tool workflow, keeps the selected item consistent, and respects price limits, but sometimes returns the wrong type of clothing.
 
-**Were my targets too easy?** My original criteria checked whether the agent completed its steps and returned items within budget, but they did not test whether the selected item was actually relevant to the user's request.
+**Were my targets too easy?** Yes. Criterion 1 had a target of 4 out of 5 successful runs. Since the three-tool workflow should complete consistently when a matching item is available, I think this target was too low. My original criteria also did not directly measure whether search results matched the requested clothing type.
 
-**What I would tighten:** In a future evaluation, I would add a criterion requiring the selected item to match the requested clothing type in at least 4 of 5 different searches.
+**What I would tighten:** would raise Criterion 1's target from 4/5 to 5/5 successful runs. I would also add a future search-relevance criterion requiring the selected item to match the requested clothing type in at least 4 of 5 different searches.
+
+I would keep my original criteria and targets unchanged for this evaluation.
 
 ## I kept my five original criteria unchanged because they are measurable and were written before testing.
 
