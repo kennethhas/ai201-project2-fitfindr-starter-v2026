@@ -626,8 +626,9 @@ Not measured yet. No token cost, latency, or daily cost result is claimed.
 
 **Run Log and Verdicts**
 
-Pending Kenneth's five original capstone criteria and their commit. The earlier
-Unit 3–4 criteria and results are not capstone results.
+The AI-assisted capstone criteria are in `criteria.md`, with authorship disclosed.
+Acceptance results have not been collected. The earlier Unit 3–4 criteria and
+results are preserved separately and are not capstone results.
 
 **The Improvement**
 
@@ -640,6 +641,19 @@ unverified. These are completion tasks, not measured criterion verdicts.
 
 **How I Used AI**
 
-AI assisted with repository inspection and implementation of the operational
-layer. Specific review decisions will be documented after Kenneth reviews the
-changes. The capstone acceptance criteria must be authored by Kenneth.
+AI assisted with repository inspection, the operational code, and the draft
+acceptance criteria. Kenneth chose to proceed with that draft and disclose the
+assistance; the criteria are not represented as independently authored. The
+brief's independent-authorship requirement may therefore remain unmet.
+
+Moment 1: Kenneth asked for a focused capstone extension to the existing
+FitFindr repository. AI provided request logging, timing, usage summaries, and
+engineering checks. Kenneth imported the five-commit patch and ran the five
+checks locally; all passed. Those checks use a stubbed agent, so they do not
+establish live-model acceptance results.
+
+Moment 2: Kenneth asked AI to draft criteria for the project. AI proposed five
+areas and numerical targets. Kenneth explicitly chose to use the AI-assisted
+plan with disclosure. Before acceptance runs, the log-coverage sample was made
+explicit as ten valid plus three invalid requests per trial. Final verdicts,
+measurements, and any improvement must be based on real collected evidence.
