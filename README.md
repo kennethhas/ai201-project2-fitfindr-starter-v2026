@@ -585,9 +585,6 @@ I would add better clothing-category matching, test more search queries, and rec
 
 ```
 
-
-## Capstone
-
 ## Capstone
 
 **What This Extends**
@@ -668,7 +665,154 @@ The two failures from the baseline that I diagnose below:
 The slow one from the baseline (HTTP 200 but 36.4 seconds):
 
 ```json
-{"timestamp": "2026-11-18T18:18:48.093959+00:00", "request_id": "4fa02f41b93844a986621e9935c1d811", "method": "POST", "path": "/ask", "input": {"query": "boots under $50"}, "output": {"error": null, "fit_card": "Found these gorgeous tan suede Chelsea boots and I am obsessed with the vintage earth-tone vibe! They're up on my poshmark for $44.00, perfect for styling with everything from baggy dark denim to relaxed khaki trousers. Grab them before I change my mind and keep them for myself!", "outfit_input": {"brand": null, "category": "shoes", "colors": ["tan", "camel"], "condition": "fair", "description": "Tan suede Chelsea boots with elastic side panels. Stacked heel. Some scuffing on the toe — can be brushed out with suede cleaner.", "id": "lst_028", "platform": "poshmark", "price": 44.0, "size": "US 8.5", "style_tags": ["vintage", "classic", "western", "earth tones"], "title": "Suede Chelsea Boots — Tan"}, "outfit_suggestion": "Outfit 1: Pair the tan suede Chelsea boots with the baggy straight-leg jeans in dark wash and the white ribbed tank top. Add the vintage black denim jacket for an effortless, classic look that bridges vintage and streetwear aesthetics. Complete the outfit with the black crossbody bag.\n\nOutfit 2: Combine the tan suede Chelsea boots with the wide-leg khaki trousers and the white ribbed tank top for a cohesive earth-tone palette. Cinch the waist with the brown leather belt to tie the browns and tans together, and layer the oversized grey crewneck sweatshirt on top for a relaxed, minimal silhouette.", "parsed": {"description": "boots", "max_price": 50.0, "size": null}, "query": "boots under $50", "search_results": [{"brand": null, "category": "shoes", "colors": ["tan", "camel"], "condition": "fair", "description": "Tan suede Chelsea boots with elastic side panels. Stacked heel. Some scuffing on the toe — can be brushed out with suede cleaner.", "id": "lst_028", "platform": "poshmark", "price": 44.0, "size": "US 8.5", "style_tags": ["vintage", "classic", "western", "earth tones"], "title": "Suede Chelsea Boots — Tan"}], "selected_item": {"brand": null, "category": "shoes", "colors": ["tan", "camel"], "condition": "fair", "description": "Tan suede Chelsea boots with elastic side panels. Stacked heel. Some scuffing on the toe — can be brushed out with suede cleaner.", "id": "lst_028", "platform": "poshmark", "price": 44.0, "size": "US 8.5", "style_tags": ["vintage", "classic", "western", "earth tones"], "title": "Suede Chelsea Boots — Tan"}, "wardrobe": {"items": [{"category": "bottoms", "colors": ["dark blue", "indigo"], "id": "w_001", "name": "Baggy straight-leg jeans, dark wash", "notes": "High-waisted, sits above the hip", "style_tags": ["denim", "streetwear", "baggy"]}, {"category": "bottoms", "colors": ["khaki", "tan"], "id": "w_002", "name": "Wide-leg khaki trousers", "notes": null, "style_tags": ["earth tones", "minimal", "wide-leg"]}, {"category": "tops", "colors": ["white"], "id": "w_003", "name": "White ribbed tank top", "notes": "Goes with everything", "style_tags": ["basics", "minimal", "fitted"]}, {"category": "tops", "colors": ["grey", "charcoal"], "id": "w_004", "name": "Oversized grey crewneck sweatshirt", "notes": "Really oversized — drops below the hip", "style_tags": ["oversized", "basics", "cozy"]}, {"category": "tops", "colors": ["black"], "id": "w_005", "name": "Black cropped zip hoodie", "notes": null, "style_tags": ["athletic", "streetwear", "cropped"]}, {"category": "outerwear", "colors": ["black"], "id": "w_006", "name": "Vintage black denim jacket", "notes": "Slightly cropped", "style_tags": ["denim", "vintage", "classic"]}, {"category": "shoes", "colors": ["white"], "id": "w_007", "name": "Chunky white sneakers", "notes": null, "style_tags": ["sneakers", "chunky", "streetwear"]}, {"category": "shoes", "colors": ["black"], "id": "w_008", "name": "Black combat boots", "notes": "Lace-up, mid-ankle height", "style_tags": ["boots", "grunge", "classic"]}, {"category": "accessories", "colors": ["brown"], "id": "w_009", "name": "Brown leather belt", "notes": null, "style_tags": ["classic", "earth tones", "accessories"]}, {"category": "accessories", "colors": ["black"], "id": "w_010", "name": "Black crossbody bag", "notes": null, "style_tags": ["minimal", "accessories", "everyday"]}]}}, "status_code": 200, "outcome": "success", "duration_ms": 36428.797, "queue_ms": 0.001, "agent_ms": 36428.107, "model_calls": 2, "reported_tokens": {"prompt": 703, "output": 183, "total": 886}, "cache_enabled": false, "model": "gemini-3.5-flash-lite"}
+{
+  "timestamp": "2026-11-18T18:18:48.093959+00:00",
+  "request_id": "4fa02f41b93844a986621e9935c1d811",
+  "method": "POST",
+  "path": "/ask",
+  "input": { "query": "boots under $50" },
+  "output": {
+    "error": null,
+    "fit_card": "Found these gorgeous tan suede Chelsea boots and I am obsessed with the vintage earth-tone vibe! They're up on my poshmark for $44.00, perfect for styling with everything from baggy dark denim to relaxed khaki trousers. Grab them before I change my mind and keep them for myself!",
+    "outfit_input": {
+      "brand": null,
+      "category": "shoes",
+      "colors": ["tan", "camel"],
+      "condition": "fair",
+      "description": "Tan suede Chelsea boots with elastic side panels. Stacked heel. Some scuffing on the toe — can be brushed out with suede cleaner.",
+      "id": "lst_028",
+      "platform": "poshmark",
+      "price": 44.0,
+      "size": "US 8.5",
+      "style_tags": ["vintage", "classic", "western", "earth tones"],
+      "title": "Suede Chelsea Boots — Tan"
+    },
+    "outfit_suggestion": "Outfit 1: Pair the tan suede Chelsea boots with the baggy straight-leg jeans in dark wash and the white ribbed tank top. Add the vintage black denim jacket for an effortless, classic look that bridges vintage and streetwear aesthetics. Complete the outfit with the black crossbody bag.\n\nOutfit 2: Combine the tan suede Chelsea boots with the wide-leg khaki trousers and the white ribbed tank top for a cohesive earth-tone palette. Cinch the waist with the brown leather belt to tie the browns and tans together, and layer the oversized grey crewneck sweatshirt on top for a relaxed, minimal silhouette.",
+    "parsed": { "description": "boots", "max_price": 50.0, "size": null },
+    "query": "boots under $50",
+    "search_results": [
+      {
+        "brand": null,
+        "category": "shoes",
+        "colors": ["tan", "camel"],
+        "condition": "fair",
+        "description": "Tan suede Chelsea boots with elastic side panels. Stacked heel. Some scuffing on the toe — can be brushed out with suede cleaner.",
+        "id": "lst_028",
+        "platform": "poshmark",
+        "price": 44.0,
+        "size": "US 8.5",
+        "style_tags": ["vintage", "classic", "western", "earth tones"],
+        "title": "Suede Chelsea Boots — Tan"
+      }
+    ],
+    "selected_item": {
+      "brand": null,
+      "category": "shoes",
+      "colors": ["tan", "camel"],
+      "condition": "fair",
+      "description": "Tan suede Chelsea boots with elastic side panels. Stacked heel. Some scuffing on the toe — can be brushed out with suede cleaner.",
+      "id": "lst_028",
+      "platform": "poshmark",
+      "price": 44.0,
+      "size": "US 8.5",
+      "style_tags": ["vintage", "classic", "western", "earth tones"],
+      "title": "Suede Chelsea Boots — Tan"
+    },
+    "wardrobe": {
+      "items": [
+        {
+          "category": "bottoms",
+          "colors": ["dark blue", "indigo"],
+          "id": "w_001",
+          "name": "Baggy straight-leg jeans, dark wash",
+          "notes": "High-waisted, sits above the hip",
+          "style_tags": ["denim", "streetwear", "baggy"]
+        },
+        {
+          "category": "bottoms",
+          "colors": ["khaki", "tan"],
+          "id": "w_002",
+          "name": "Wide-leg khaki trousers",
+          "notes": null,
+          "style_tags": ["earth tones", "minimal", "wide-leg"]
+        },
+        {
+          "category": "tops",
+          "colors": ["white"],
+          "id": "w_003",
+          "name": "White ribbed tank top",
+          "notes": "Goes with everything",
+          "style_tags": ["basics", "minimal", "fitted"]
+        },
+        {
+          "category": "tops",
+          "colors": ["grey", "charcoal"],
+          "id": "w_004",
+          "name": "Oversized grey crewneck sweatshirt",
+          "notes": "Really oversized — drops below the hip",
+          "style_tags": ["oversized", "basics", "cozy"]
+        },
+        {
+          "category": "tops",
+          "colors": ["black"],
+          "id": "w_005",
+          "name": "Black cropped zip hoodie",
+          "notes": null,
+          "style_tags": ["athletic", "streetwear", "cropped"]
+        },
+        {
+          "category": "outerwear",
+          "colors": ["black"],
+          "id": "w_006",
+          "name": "Vintage black denim jacket",
+          "notes": "Slightly cropped",
+          "style_tags": ["denim", "vintage", "classic"]
+        },
+        {
+          "category": "shoes",
+          "colors": ["white"],
+          "id": "w_007",
+          "name": "Chunky white sneakers",
+          "notes": null,
+          "style_tags": ["sneakers", "chunky", "streetwear"]
+        },
+        {
+          "category": "shoes",
+          "colors": ["black"],
+          "id": "w_008",
+          "name": "Black combat boots",
+          "notes": "Lace-up, mid-ankle height",
+          "style_tags": ["boots", "grunge", "classic"]
+        },
+        {
+          "category": "accessories",
+          "colors": ["brown"],
+          "id": "w_009",
+          "name": "Brown leather belt",
+          "notes": null,
+          "style_tags": ["classic", "earth tones", "accessories"]
+        },
+        {
+          "category": "accessories",
+          "colors": ["black"],
+          "id": "w_010",
+          "name": "Black crossbody bag",
+          "notes": null,
+          "style_tags": ["minimal", "accessories", "everyday"]
+        }
+      ]
+    }
+  },
+  "status_code": 200,
+  "outcome": "success",
+  "duration_ms": 36428.797,
+  "queue_ms": 0.001,
+  "agent_ms": 36428.107,
+  "model_calls": 2,
+  "reported_tokens": { "prompt": 703, "output": 183, "total": 886 },
+  "cache_enabled": false,
+  "model": "gemini-3.5-flash-lite"
+}
 ```
 
 Four normal successful requests from the after run:
@@ -690,10 +834,10 @@ gives the same thing. Tokens are what the adapter reports for prompt plus
 output on `gemini-3.5-flash-lite`. Time is wall clock at the server handler, so
 it includes MCP startup and waiting on Gemini.
 
-| | Ten-run total | Per run |
-|---|---:|---:|
-| Tokens (prompt + output) | 8,718 | 871.8 |
-| Seconds | 113.51 | 11.35 |
+|                          | Ten-run total | Per run |
+| ------------------------ | ------------: | ------: |
+| Tokens (prompt + output) |         8,718 |   871.8 |
+| Seconds                  |        113.51 |   11.35 |
 
 For 100 people making one query each per day:
 
@@ -720,23 +864,23 @@ and `evaluate_capstone.py::main` scored them into these tables.
 
 Before (commit `1664aaf`, 39 requests):
 
-| Criterion | Target per trial | Run 1 | Run 2 | Run 3 | Verdict |
-|---|---|---|---|---|---|
-| 1. Complete request records | 13/13 | 13/13 | 13/13 | 13/13 | MET |
-| 2. HTTP response time | 10/10 within 30 s | 10/10 | 10/10 | 8/10 | MISSED |
-| 3. Recorded model usage | 10/10 | 10/10 | 10/10 | 9/10 | MISSED |
-| 4. Invalid input rejection | 3/3 | 2/3 | 2/3 | 2/3 | MISSED |
-| 5. Preserve original behavior | 10/10 | 10/10 | 10/10 | 9/10 | MISSED |
+| Criterion                     | Target per trial  | Run 1 | Run 2 | Run 3 | Verdict |
+| ----------------------------- | ----------------- | ----- | ----- | ----- | ------- |
+| 1. Complete request records   | 13/13             | 13/13 | 13/13 | 13/13 | MET     |
+| 2. HTTP response time         | 10/10 within 30 s | 10/10 | 10/10 | 8/10  | MISSED  |
+| 3. Recorded model usage       | 10/10             | 10/10 | 10/10 | 9/10  | MISSED  |
+| 4. Invalid input rejection    | 3/3               | 2/3   | 2/3   | 2/3   | MISSED  |
+| 5. Preserve original behavior | 10/10             | 10/10 | 10/10 | 9/10  | MISSED  |
 
 After (commit `fa4ce3a`, 39 requests):
 
-| Criterion | Target per trial | Run 1 | Run 2 | Run 3 | Verdict |
-|---|---|---|---|---|---|
-| 1. Complete request records | 13/13 | 13/13 | 13/13 | 13/13 | MET |
-| 2. HTTP response time | 10/10 within 30 s | 10/10 | 10/10 | 10/10 | MET |
-| 3. Recorded model usage | 10/10 | 10/10 | 10/10 | 10/10 | MET |
-| 4. Invalid input rejection | 3/3 | 3/3 | 3/3 | 3/3 | MET |
-| 5. Preserve original behavior | 10/10 | 10/10 | 10/10 | 10/10 | MET |
+| Criterion                     | Target per trial  | Run 1 | Run 2 | Run 3 | Verdict |
+| ----------------------------- | ----------------- | ----- | ----- | ----- | ------- |
+| 1. Complete request records   | 13/13             | 13/13 | 13/13 | 13/13 | MET     |
+| 2. HTTP response time         | 10/10 within 30 s | 10/10 | 10/10 | 10/10 | MET     |
+| 3. Recorded model usage       | 10/10             | 10/10 | 10/10 | 10/10 | MET     |
+| 4. Invalid input rejection    | 3/3               | 3/3   | 3/3   | 3/3   | MET     |
+| 5. Preserve original behavior | 10/10             | 10/10 | 10/10 | 10/10 | MET     |
 
 How I decided each baseline verdict:
 
@@ -770,7 +914,7 @@ Real output under each criterion (file and function that produced it):
   `capture_capstone.py::main` measured it at the client as
   `client_elapsed_seconds: 36.431`.
 - C3: `valid_9` trial 3, `"model_calls": 2, "reported_tokens": {"prompt": 703,
-  "output": 183, "total": 886}`, a pass. `valid_5` trial 3,
+"output": 183, "total": 886}`, a pass. `valid_5` trial 3,
   `"outcome": "error"` with 516 tokens, a miss.
 - C4: before, `{"query": 123}` gave `"status_code": 500` and the body was
   `non_json_body: "<!doctype html>…500 Internal Server Error…"`. After, it gave
@@ -785,7 +929,7 @@ Real output under each criterion (file and function that produced it):
 
 The seven miss lines in the baseline report are really three different things.
 
-*Miss A: `{"query": 123}` returned 500 in all three trials (C4).*
+_Miss A: `{"query": 123}` returned 500 in all three trials (C4)._
 
 Where: the `/ask` handler in `serve.py`, before the agent runs.
 
@@ -797,8 +941,8 @@ and regexes), which raised. Nothing caught it, so Flask sent its default HTML
 `model_calls: 0`, `agent_ms: null`, `duration_ms: 2.3`. This one is
 deterministic, 3 out of 3, and it is the one I fixed.
 
-*Miss B: `valid_5` ("cardigan under $40"), trial 3, returned 500 after 7 s
-(C2, C3, C5).*
+_Miss B: `valid_5` ("cardigan under $40"), trial 3, returned 500 after 7 s
+(C2, C3, C5)._
 
 Where: the Gemini call in `generate.py`, reached from `suggest_outfit` or
 `create_fit_card` inside `run_agent`.
@@ -813,8 +957,8 @@ failure for the user. The same query passed in trials 1 and 2 and in all three
 after trials, which fits an outside cause and not a bug in the query. My fix
 did not touch this.
 
-*Miss C: `valid_9` ("boots under $50"), trial 3, returned 200 but took 36.4 s
-(C2).*
+_Miss C: `valid_9` ("boots under $50"), trial 3, returned 200 but took 36.4 s
+(C2)._
 
 Where: inside the agent waiting on the model. `agent_ms: 36428` and
 `queue_ms: 0.001`, so it was not waiting on the request lock.
@@ -869,19 +1013,19 @@ within 20 s and expect it to miss until the Gemini wait is dealt with.
 All five criteria read MET after the change, but two of the baseline failures
 were not fixed, they just did not come back:
 
-1. *Gemini 503 turning into a user-facing 500 (Miss B).* What I would do:
+1. _Gemini 503 turning into a user-facing 500 (Miss B)._ What I would do:
    catch `ModelUnavailable` in `generate.py`, retry once or twice with a short
    wait, and if it still fails return a 503 JSON error that says to try again
    instead of a 500. Why I stopped: the brief asks for one measured
    improvement, and a retry is hard to measure honestly because the failure
    is random. Three trials cannot show whether the retry helped.
-2. *The 36-second request (Miss C).* What I would do: log the time for each
-   model call separately so I can tell Gemini latency from rate-limit pacing,
-   then decide whether the agent needs a timeout. Why I stopped: without the
-   per-call timing I would be guessing at the cause, and adding it after the
-   baseline would have changed what the after run was measuring.
+2. _The 36-second request (Miss C)._ What I would do: log the time for each
+model call separately so I can tell Gemini latency from rate-limit pacing,
+then decide whether the agent needs a timeout. Why I stopped: without the
+per-call timing I would be guessing at the cause, and adding it after the
+baseline would have changed what the after run was measuring.
 <!-- TODO: if you have NOT done the clean clone, keep item 3. If you have, delete it. -->
-3. *Clean-checkout check.* I have not yet run RUNNING.md from a fresh clone.
+3. _Clean-checkout check._ I have not yet run RUNNING.md from a fresh clone.
 
 What I would do first: the per-call timing. It is the smallest change, it
 makes both remaining misses diagnosable instead of guessed, and it would have
@@ -897,17 +1041,16 @@ They are not independently authored, so the brief's independent-authorship
 requirement may not be met. Every number, verdict, and pasted log line above
 is from real runs on my machine. Nothing was made up or edited.
 
-- *Moment 1:* I asked for a deploy-and-instrument extension to my existing
+- _Moment 1:_ I asked for a deploy-and-instrument extension to my existing
   repo. AI gave me request logging, timing, usage summary, and some engineering
   checks as a patch. I imported it and ran the checks locally. They use a
   stubbed agent, so I did not count them as acceptance evidence.
-  
-- *Moment 2:* I asked AI to draft criteria. It proposed five areas and numeric
+- _Moment 2:_ I asked AI to draft criteria. It proposed five areas and numeric
   targets. Before any run I had the batch spelled out as ten valid plus three
   invalid requests per trial and committed the file on its own (`10c8ba1`) so
   the results would be scored against a frozen standard.
 
-- *Moment 3:* After the baseline I gave AI the saved responses and log lines
+- _Moment 3:_ After the baseline I gave AI the saved responses and log lines
   for the three failures and asked what the mechanism was. It called the
   numeric-query 500 a missing type check in my handler, deterministic and
   mine to fix, and the other two Gemini-side. I picked the validation fix
