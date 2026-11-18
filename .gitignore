@@ -15,6 +15,9 @@ env/
 # Cached model responses
 .cache/
 
+# Runtime logs: copy selected, reviewed capstone evidence into results/.
+logs/
+
 # OS noise
 .DS_Store
 Thumbs.db
