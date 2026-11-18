@@ -19,26 +19,29 @@ same test set. Logging alone is not a completed before-and-after improvement.
 | `summarize_usage.py` | Reads ten eligible uncached successful requests and calculates observed average usage and a one-query-per-person daily projection. |
 | `test_observability.py` | Uses a stubbed agent to check the logging plumbing. These checks are not evidence about live Gemini quality or latency. |
 | `capture_capstone.py` | Sends actual HTTP requests, saves each response immediately, and copies the matching structured log using the request ID. It assigns no acceptance verdicts. |
+| `evaluate_capstone.py` | Checks the saved cases against the frozen criteria, builds the three-trial verdict table, and lists failures for diagnosis. It makes no model calls. |
 
 ## Evidence collection order
 
 1. Review the extension and the proposed test inputs in `capture_capstone.py`.
-2. Write your five capstone criteria with your own targets and reasons. At
-   least three concern the extension and one concerns failure. The previously
-   supplied AI draft is not evidence of independent authorship.
-3. Preserve the old Unit 3–4 criteria in a separately named Markdown file, then
-   put your capstone criteria in `criteria.md`. Commit before acceptance runs.
+2. Read the five frozen criteria in `criteria.md`. They have been committed
+   with AI authorship disclosed, following Kenneth's decision to use the draft.
+   The course asks for independent authorship; this plan does not claim that.
+3. The old Unit 3–4 criteria are preserved in `criteria-unit3-4.md`. Criteria
+   changes before testing require corresponding evaluator changes. Do not
+   relax targets in response to misses.
 4. Import and review the collector, then commit any modifications to it.
 5. In terminal A, activate `.venv`, set `$env:AI201_CACHE='0'`, and run
    `python serve.py`. Keep this terminal running.
 6. In terminal B, activate `.venv`, set `$env:AI201_CACHE='0'`, and run
    `python capture_capstone.py --label before`.
-7. Read the real responses and logs. Produce one row per criterion with three
-   trial columns, a target, and MET or MISSED. A target must hold in all three
-   trials to be MET. Save the baseline before editing application code.
+7. Run `python evaluate_capstone.py --label before`. Read the actual responses,
+   logs and generated `results/capstone_before/report.md`. A target must hold
+   in all three trials to be MET. Save the baseline before editing application code.
 8. Diagnose every miss by file/function and mechanism. Select one improvement
    based on the diagnosis. Commit it, restart the server, and run the collector
-   with `--label after`. Reevaluate all five criteria.
+   with `--label after`. Run `python evaluate_capstone.py --label after` to
+   reevaluate all five criteria. Compare both reports and diagnose every miss.
 9. Finish the nine README sections. Paste at least ten actual structured records
    plus failure evidence, both result tables, cost arithmetic, limitations, and
    two specific AI-assistance moments. Verify startup from a fresh checkout.

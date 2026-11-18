@@ -23,7 +23,13 @@ def summarize(records, count=10, people=100):
     selected = eligible[-count:]
     seconds = [r["duration_ms"] / 1000 for r in selected]
     tokens = [r["reported_tokens"]["total"] for r in selected]
-    token_average = mean(tokens) if all(t > 0 for t in tokens) else None
+    complete_counts = all(
+        all(type(r["reported_tokens"].get(k)) is int and r["reported_tokens"][k] > 0
+            for k in ("prompt", "output", "total"))
+        and r["reported_tokens"]["total"] == r["reported_tokens"]["prompt"] + r["reported_tokens"]["output"]
+        for r in selected
+    )
+    token_average = mean(tokens) if complete_counts else None
     return {
         "runs": count,
         "selection": "last successful uncached /ask requests with model calls",
