@@ -2,6 +2,7 @@
 
 import json
 import logging
+import math
 import os
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
@@ -12,6 +13,8 @@ def redact(value):
 
     This is not general PII detection: use synthetic clothing inputs for evidence.
     """
+    if isinstance(value, float) and not math.isfinite(value):
+        return str(value)
     if isinstance(value, dict):
         return {
             k: "[REDACTED]" if str(k).lower() in {

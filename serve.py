@@ -27,26 +27,79 @@ web server has to be. The reason is worth reading before you deploy: see the
 note above `_one_at_a_time` below — it also decides which gunicorn worker you
 can use.
 
-⚠️ There is deliberately NO logging, NO timing and NO request counting in this
-file. That is unit 9's follow-along: you instrument this yourself, first, and
-then deploy it. A structured log you were handed teaches you nothing about
-what belongs in one — and the timing field is the one everybody skips.
+Unit 9 adds one JSONL record per HTTP request, including errors, elapsed time,
+queue time, and the model adapter's reported usage. The agent is unchanged.
 """
 
 import os
 import sys
 import threading
+import time
+import uuid
+from datetime import datetime, timezone
 
 # config first, and before anything that talks to the model: it loads your .env
 # and fixes the Windows console encoding for every module that imports it.
 import config  # noqa: F401
 
-from flask import Flask, jsonify, request
+from flask import Flask, g, jsonify, request
 
 from agent import run_agent
+import generate
+from observability import make_logger, write_record
 from utils.data_loader import get_example_wardrobe
 
 app = Flask(__name__)
+request_logger = make_logger()
+
+
+@app.before_request
+def start_record():
+    g.started = time.perf_counter()
+    g.timestamp = datetime.now(timezone.utc).isoformat()
+    g.request_id = uuid.uuid4().hex
+    g.queue_ms = None
+    g.agent_ms = None
+    g.model_calls = 0
+    g.reported_tokens = {"prompt": 0, "output": 0, "total": 0}
+
+
+@app.after_request
+def finish_record(response):
+    payload = request.get_json(silent=True)
+    if isinstance(payload, dict):
+        # Do not log arbitrary extra request fields or HTTP headers.
+        inputs = {k: payload[k] for k in ("query", "wardrobe") if k in payload}
+    else:
+        inputs = {"json_value": payload, "content_type": request.content_type}
+    output = response.get_json(silent=True)
+    if output is None:
+        output = {"http_status": response.status_code, "message": response.status}
+    error = output.get("error") if isinstance(output, dict) else None
+    outcome = "error" if response.status_code >= 500 else (
+        "rejected" if response.status_code >= 400 else (
+            "agent_stopped" if error else "success"
+        )
+    )
+    write_record(request_logger, {
+        "timestamp": g.timestamp,
+        "request_id": g.request_id,
+        "method": request.method,
+        "path": request.path,
+        "input": inputs,
+        "output": output,
+        "status_code": response.status_code,
+        "outcome": outcome,
+        "duration_ms": round((time.perf_counter() - g.started) * 1000, 3),
+        "queue_ms": g.queue_ms,
+        "agent_ms": g.agent_ms,
+        "model_calls": g.model_calls,
+        "reported_tokens": g.reported_tokens,
+        "cache_enabled": config.CACHE_ENABLED,
+        "model": config.MODEL,
+    })
+    response.headers["X-Request-ID"] = g.request_id
+    return response
 
 
 # ── one request at a time ─────────────────────────────────────────────────────
@@ -138,11 +191,23 @@ def ask():
 
     failure = None
     session = None
+    queue_started = time.perf_counter()
     with _one_at_a_time:
+        agent_started = time.perf_counter()
+        g.queue_ms = round((agent_started - queue_started) * 1000, 3)
+        calls_before = generate.call_count()
+        tokens_before = generate.token_counts()
         try:
             session = run_agent(query, wardrobe)
         except Exception as exc:  # noqa: BLE001 — a 500 with a sentence beats a hang
             failure = f"{type(exc).__name__}: {exc}"
+        finally:
+            g.agent_ms = round((time.perf_counter() - agent_started) * 1000, 3)
+            g.model_calls = generate.call_count() - calls_before
+            tokens_after = generate.token_counts()
+            g.reported_tokens = {
+                key: tokens_after[key] - tokens_before[key] for key in tokens_before
+            }
 
     # Outside the lock: building a response is not work the next caller should
     # be waiting on.
