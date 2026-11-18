@@ -1,0 +1,112 @@
+{
+  "label": "after",
+  "started_utc": "2026-11-18T18:24:57.180725+00:00",
+  "git_commit": "fa4ce3a7ec04cfa4875b7cf195f51a7dfa5f9daf",
+  "criteria_sha256": "057291c0de683c6e8819234c8e4dd4d0c531794a53abdbd06b4bbc52dcdb03d3",
+  "trials": 3,
+  "cases": [
+    {
+      "name": "valid_1",
+      "kind": "valid",
+      "payload": {
+        "query": "graphic tee under $30"
+      },
+      "budget": 30
+    },
+    {
+      "name": "valid_2",
+      "kind": "valid",
+      "payload": {
+        "query": "jeans under $40"
+      },
+      "budget": 40
+    },
+    {
+      "name": "valid_3",
+      "kind": "valid",
+      "payload": {
+        "query": "flannel shirt under $30"
+      },
+      "budget": 30
+    },
+    {
+      "name": "valid_4",
+      "kind": "valid",
+      "payload": {
+        "query": "track jacket under $50"
+      },
+      "budget": 50
+    },
+    {
+      "name": "valid_5",
+      "kind": "valid",
+      "payload": {
+        "query": "cardigan under $40"
+      },
+      "budget": 40
+    },
+    {
+      "name": "valid_6",
+      "kind": "valid",
+      "payload": {
+        "query": "leather belt under $20"
+      },
+      "budget": 20
+    },
+    {
+      "name": "valid_7",
+      "kind": "valid",
+      "payload": {
+        "query": "graphic hoodie under $30"
+      },
+      "budget": 30
+    },
+    {
+      "name": "valid_8",
+      "kind": "valid",
+      "payload": {
+        "query": "sneakers under $50"
+      },
+      "budget": 50
+    },
+    {
+      "name": "valid_9",
+      "kind": "valid",
+      "payload": {
+        "query": "boots under $50"
+      },
+      "budget": 50
+    },
+    {
+      "name": "valid_10",
+      "kind": "valid",
+      "payload": {
+        "query": "shoulder bag under $40"
+      },
+      "budget": 40
+    },
+    {
+      "name": "missing_query",
+      "kind": "invalid",
+      "payload": {}
+    },
+    {
+      "name": "blank_query",
+      "kind": "invalid",
+      "payload": {
+        "query": "   "
+      }
+    },
+    {
+      "name": "numeric_query",
+      "kind": "invalid",
+      "payload": {
+        "query": 123
+      }
+    }
+  ],
+  "base_url": "http://127.0.0.1:5000",
+  "definition": "Warm server process; includes MCP startup and model waits. Ten-second pacing between valid cases.",
+  "complete": true,
+  "finished_utc": "2026-11-18T18:35:34.838686+00:00"
+}
