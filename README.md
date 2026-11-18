@@ -584,3 +584,54 @@ I would add better clothing-category matching, test more search queries, and rec
 ```
 
 ```
+
+
+## Capstone
+
+**What This Extends**
+
+This extends the Unit 3–4 FitFindr agent, which searches secondhand clothing
+listings over MCP and generates outfit suggestions and fit cards. The new work
+is an operational layer around the existing HTTP service: structured request
+logs, timing, usage measurements, and reproducible startup instructions.
+
+**The Shape**
+
+Shape A — deploy and instrument. The scope is making the existing service
+runnable and observable, then measuring one improvement after baseline testing.
+A new user interface, live shopping integrations, and a rewrite of the agent
+are out of scope.
+
+**Running It**
+
+The planned submission route is Path B (local with logs), with Render hosting
+optional if time permits. See RUNNING.md. Neither clean-checkout verification
+nor hosted deployment has been completed yet.
+
+**Instrumentation**
+
+Implementation in progress. Real session evidence has not been collected.
+
+**What It Costs**
+
+Not measured yet. No token cost, latency, or daily cost result is claimed.
+
+**Run Log and Verdicts**
+
+Pending Kenneth's five original capstone criteria and their commit. The earlier
+Unit 3–4 criteria and results are not capstone results.
+
+**The Improvement**
+
+Pending the baseline results and diagnosis. No improvement is claimed yet.
+
+**What's Still Broken**
+
+Live model access, clean-checkout startup, and the full acceptance cycle remain
+unverified. These are completion tasks, not measured criterion verdicts.
+
+**How I Used AI**
+
+AI assisted with repository inspection and implementation of the operational
+layer. Specific review decisions will be documented after Kenneth reviews the
+changes. The capstone acceptance criteria must be authored by Kenneth.
