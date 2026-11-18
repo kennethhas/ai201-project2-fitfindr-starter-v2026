@@ -610,7 +610,15 @@ nor hosted deployment has been completed yet.
 
 **Instrumentation**
 
-Implementation in progress. Real session evidence has not been collected.
+Each HTTP request now records timestamp, request ID, input, output, status,
+outcome, elapsed time, lock wait, agent time, reported model calls and tokens,
+model name, and cache state. Logs rotate with two backups. `summarize_usage.py`
+can calculate a ten-run average and the 100-person daily projection from real
+uncached successful requests. See RUNNING.md for measurement limitations.
+
+Five isolated engineering checks pass using a stubbed agent and temporary logs.
+They are not capstone acceptance trials. Real session evidence has not been
+collected; at least ten entries plus failure evidence still need to be pasted here.
 
 **What It Costs**
 

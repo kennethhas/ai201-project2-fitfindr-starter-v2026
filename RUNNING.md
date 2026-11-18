@@ -1,6 +1,138 @@
 # Running FitFindr
 
-Everything about how the starter works and how to use it.
+## Capstone quick start — local with logs
+
+Status: the instrumentation has passed isolated engineering checks. Live Gemini
+responses, the full clean-checkout workflow, and acceptance results still need
+verification. This is a run guide, not a claim of completed deployment.
+
+Use Python 3.11–3.13 (the build environment uses 3.12). Dependencies retain the
+course's bounds in `requirements.txt`. FitFindr calls Gemini remotely and does
+not download a local model. Start from a fresh clone of this same repository
+and check out the branch containing the capstone work.
+
+### Windows PowerShell
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+```
+
+The copy command is for a fresh checkout only; do not overwrite your existing
+`.env`. Put your Gemini key into `.env` on your own machine. Never commit it or
+paste it into chat. Then check the connection:
+
+```powershell
+python test.py
+```
+
+Before collecting acceptance results, write and commit your own five Unit 9
+criteria in `criteria.md`, preserving the earlier unit's criteria separately.
+For measurement, disable caching and start with this command:
+
+```powershell
+$env:AI201_CACHE='0'; python serve.py
+```
+
+Open a second terminal in the same project folder:
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:5000/health
+$body = @{query='vintage graphic tee under $30'} | ConvertTo-Json
+Invoke-RestMethod -Method Post -Uri http://127.0.0.1:5000/ask -ContentType 'application/json' -Body $body
+Get-Content logs/requests.jsonl -Tail 1
+```
+
+Single quotes preserve the literal dollar amount. `/health` only confirms that
+Flask is running; a full `/ask` response verifies the MCP and Gemini path.
+Check the response's `error` field as well as the HTTP status. The app currently
+returns HTTP 200 for some early-stopped agent sessions.
+
+### macOS / Linux
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+cp .env.example .env
+# Configure .env privately, then:
+python test.py
+AI201_CACHE=0 python serve.py
+```
+
+In a second terminal:
+
+```bash
+curl http://127.0.0.1:5000/health
+curl -X POST http://127.0.0.1:5000/ask -H 'Content-Type: application/json' -d '{"query":"vintage graphic tee under $30"}'
+```
+
+### Logs and measurement
+
+Every HTTP request appends one JSON record to `logs/requests.jsonl`. The record
+contains timestamp, request ID, method/path, input, output, status/outcome,
+`duration_ms`, `queue_ms`, `agent_ms`, model call count, adapter-reported tokens,
+model name, and whether caching was enabled. `X-Request-ID` links a response to
+its log record. Duration covers the server handler and response construction,
+not network transit, server startup, or the final log write. Agent time includes
+MCP startup and waits for the external model. It is not CPU time.
+
+The file rotates at about 5 MB, retaining two backups. Logging stays enabled
+independently of Flask's console log level. Run from the repository root; set
+`FITFINDR_LOG_PATH` to change the log destination. Use one process: this logger
+and the adapter counters are not designed for multiple Gunicorn workers.
+
+Use synthetic clothing queries for evidence. Credential-named fields and the
+configured Gemini key are redacted from structured logs, but this is not a
+complete personal-data scrubber. Review logs before copying them to `results/`
+and pasting evidence into the README. Runtime logs are ignored by Git.
+
+After collecting ten real successful uncached `/ask` runs, activate the virtual
+environment in the second terminal and run:
+
+```text
+python summarize_usage.py logs/requests.jsonl
+```
+
+This reports the last ten eligible request IDs, sums and averages, plus arithmetic
+for 100 people making one query each per day. It excludes failures and health
+checks. Token counts cover the adapter's reported prompt plus output tokens;
+they are not guaranteed to cover every billed category. Missing/zero token data
+is marked unavailable. Elapsed seconds are reported separately, not as dollars
+or CPU time. Preserve failed-run evidence too; successful-only averages do not
+represent the cost of failures.
+
+### Optional Render route
+
+Connect this repository/branch as a Python web service. Use a supported Python
+version. Build command: `pip install -r requirements.txt`. Start command:
+`gunicorn --workers 1 --timeout 180 serve:app`. Keep the default synchronous
+worker; the timeout allows more room for the existing model pacing but does not
+guarantee slow requests will finish. Configure `GEMINI_API_KEY` privately and
+`AI201_CACHE=0` for measurement. Use `/health` for the health check, then test a
+real POST to `/ask`. No graphical home page is implemented.
+
+Hosting is optional and has not been performed. Copy evidence during the same
+session; a host's local filesystem may be ephemeral. If deployment consumes
+45 minutes, finish the equally credited local route.
+
+### Engineering checks (not acceptance evidence)
+
+```text
+python -m unittest -v test_observability
+```
+
+These checks stub the agent and use temporary logs. They do not establish
+model quality, real API latency, cost, or your five acceptance verdicts.
+
+---
+
+## Earlier course reference
+
+The commands below remain for reference; some starter comments describe the
+original unimplemented version. The current agent and three tools are built.
 
 ---
 
@@ -149,9 +281,7 @@ gunicorn serve:app
 | `gunicorn serve:app`, exactly | Not `-k gevent`, not `-k eventlet`, not wrapped for uvicorn. `mcp_client.call_tool` uses `asyncio.run()`, which won't start inside a running event loop, so an async worker breaks **every** MCP call — and only once you've deployed it |
 | The first request is slow | The free tier puts your app to sleep after about fifteen minutes of nothing. The next request wakes it up and waits for it — around a minute. Not a bug, and worth knowing before you demo it |
 
-`serve.py` ships with **no logging and no timing in it**, on purpose. You add
-that yourself in the follow-along, before you deploy — instrumenting first is
-the point of the session.
+`serve.py` now includes the capstone request logging and timing described above.
 
 ---
 
