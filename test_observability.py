@@ -57,6 +57,24 @@ class ObservabilityChecks(unittest.TestCase):
         self.assertEqual([r["outcome"] for r in records], ["rejected", "error"])
         self.assertIn("stubbed failure", records[1]["output"]["error"])
 
+    def test_invalid_query_types_are_rejected_before_agent_work(self):
+        payloads = [
+            {}, {"query": "   "}, {"query": 123}, {"query": True},
+            {"query": None}, {"query": ["tee"]}, {"query": {"item": "tee"}},
+            ["tee"], "tee", 123,
+        ]
+        with patch.object(self.serve, "run_agent") as agent:
+            for payload in payloads:
+                with self.subTest(payload=payload):
+                    response = self.client.post("/ask", json=payload)
+                    self.assertEqual(response.status_code, 400)
+                    self.assertTrue(response.get_json()["error"])
+                    record = self.records()[-1]
+                    self.assertEqual(record["request_id"], response.headers["X-Request-ID"])
+                    self.assertEqual(record["outcome"], "rejected")
+                    self.assertEqual(record["model_calls"], 0)
+            agent.assert_not_called()
+
     def test_usage_is_per_request_and_stopped_session_is_not_success(self):
         with patch.object(self.serve, "run_agent", return_value={"error": "no match"}), \
              patch.object(self.serve.generate, "call_count", side_effect=[4, 6]), \

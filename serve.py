@@ -160,12 +160,14 @@ def ask():
                                                 example wardrobe the CLI uses.
     Out:  the session dict from run_agent(), as JSON.
     """
-    payload = request.get_json(silent=True) or {}
-    query = (payload.get("query") or "").strip()
-    if not query:
-        # 400 rather than a stack trace: the caller can act on this one.
-        return jsonify({"error": "Send JSON with a 'query' field, e.g. "
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        return jsonify({"error": "Send a JSON object with a non-empty text 'query' field."}), 400
+    query = payload.get("query")
+    if not isinstance(query, str) or not query.strip():
+        return jsonify({"error": "The 'query' field must be non-empty text, e.g. "
                                  '{"query": "vintage graphic tee under $30"}'}), 400
+    query = query.strip()
 
     wardrobe = payload.get("wardrobe")
     if not isinstance(wardrobe, dict):
